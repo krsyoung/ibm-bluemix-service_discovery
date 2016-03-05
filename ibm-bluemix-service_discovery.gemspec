@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{Library for using the IBM Bluemix Service Discovery service.}
   spec.description   = %q{Library to support microservices interacting with the IBM Bluemix Service Discovery service.  Use this library in your Rails or Sinatra based microservices to easily register and discover services in your Bluemix account.}
-  spec.homepage      = "http://www.ibm.com"
+  spec.homepage      = "https://github.com/krsyoung/ibm-bluemix-service_discovery"
   spec.license       = "MIT"
 
   # # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
