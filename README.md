@@ -1,5 +1,7 @@
 # IBM::Bluemix::ServiceDiscovery
 
+[![Gem Version](https://badge.fury.io/rb/ibm-bluemix-service_discovery.svg)](https://badge.fury.io/rb/ibm-bluemix-service_discovery)
+
 This is a Ruby Gem for interfacing with the IBM Bluemix [Service Discovery service](https://console.ng.bluemix.net/catalog/services/service-discovery/).  
 
 This Gem provides an easy to user interface to access all of the features of
