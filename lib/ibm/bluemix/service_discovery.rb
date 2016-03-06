@@ -18,6 +18,8 @@ module IBM
       # URL for the production Bluemix Service Registry endpoint
       SERVICE_REGISTRY_ENDPOINT = "https://servicediscovery.ng.bluemix.net/api/v1/instances"
 
+      private_constant :SERVICE_DISCOVERY_ENDPOINT, :SERVICE_REGISTRY_ENDPOINT
+
       # cache of registered services
       @@services = {}
 
@@ -26,8 +28,14 @@ module IBM
 
       # dummy logger that can be overridden
       class << self
+        # logger attribute that can be overridden
         attr_writer :logger
 
+        # Logger function that should be overridden.
+        #
+        # @example
+        #   logger.debug 'this is a debug message'
+        #
         def logger
           @logger ||= Logger.new($stdout).tap do |log|
             log.progname = self.name
@@ -37,11 +45,11 @@ module IBM
 
       # Create a new ServiceDiscovery instance.
       #
-      # Example:
-      #   >> sd = ServiceDiscovery.new('token...')
+      # @example
+      #   sd = ServiceDiscovery.new('token...')
       #
-      # ===Arguments
-      # [auth_token] (String) Valid `auth_token` from the IBM Bluemix Service Discovery service
+      # @param auth_token [String] Valid `auth_token` from the IBM Bluemix Service Discovery service
+      #
       def initialize(auth_token)
         @auth_token = auth_token
 
@@ -55,24 +63,17 @@ module IBM
 
       # Register a service with Service Discovery
       #
-      # Example:
-      #   >> sd = ServiceDiscovery.new('token...')
+      # @example
+      #   sd = ServiceDiscovery.new('token...')
       #   => sd.register('sample_service', '192.168.1.100:8080', { ttl: 60, heartbeat: true }, {})
       #
-      # ===Arguments
-      # [service_name] (String) The name of the microservice
-      # [host] (String) The host and port where the microservice can be reached at
-      # [options] (Hash) Options, see below
-      # [meta] (Hash) Metadata to store with the service registration
-      #
-      # ====Options
-      # [heartbeat] (Boolean) Enable or disable automated heartbeat for the service
-      # [ttl] (Integer) Expire the service after this many seconds if a heartbeat has not been received.  Hearbeat is automatically set to 30% of this value
-      #
-      # ===Returns
-      # resulting payload from the call to Service Discovery
-      #
-      # ===Raises
+      # @param service_name [String] The name of the microservice
+      # @param host [String] The host and port where the microservice can be reached at
+      # @param options [Hash] Options to customize service discovery instance (see below)
+      # @option options [Boolean] :heartbeat Enable or disable automated heartbeat for the service
+      # @option options [Integer] :ttl Expire the service after this many seconds if a heartbeat has not been received.  Hearbeat is automatically set to 30% of this value
+      # @param meta [Hash] Metadata to store with the service registration
+      # @return [Hash] Resulting payload from the call to Service Discovery
       #
       def register(service_name, host, options = {}, meta = {})
 
@@ -134,16 +135,11 @@ module IBM
 
       # Send a heartbeat request to indicate the service is still alive and well
       #
-      # Example:
-      #   >> sd.renew('sample_service')
+      # @example
+      #   sd.renew('sample_service')
       #
-      # ===Arguments
-      # [service_name] (String) The name of the microservice
-      #
-      # ===Returns
-      # (Boolean) `true` if the service was renewed, `false` otherwise
-      #
-      # ===Raises
+      # @param service_name [String] The name of the microservice
+      # @return [Boolean] `true` if the service was renewed, `false` otherwise
       #
       def renew(service_name)
 
@@ -175,17 +171,12 @@ module IBM
       # Set-up a separate Thread to send continuous heartbeats (renew) calls to
       # indicate the service is alive.
       #
-      # Example:
-      #   >> sd.heartbeat('sample_service', 45)
+      # @example
+      #   sd.heartbeat('sample_service', 45)
       #
-      # ===Arguments
-      # [service_name] (String) The name of the microservice
-      # [interval] (Integer) The number of seconds between heartbeats
-      #
-      # ===Returns
-      # (Boolean) `true` if the heartbeat thread was started, `false` otherwise
-      #
-      # ===Raises
+      # @param service_name [String] The name of the microservice
+      # @param interval [Integer] The number of seconds between heartbeats
+      # @return [Boolean] `true` if the heartbeat thread was started, `false` otherwise
       #
       def heartbeat(service_name, interval=60)
 
@@ -211,16 +202,11 @@ module IBM
 
       # Stops a previously established heartbeat Thread
       #
-      # Example:
-      #   >> sd.unheartbeat('sample_service')
+      # @example
+      #   sd.unheartbeat('sample_service')
       #
-      # ===Arguments
-      # [service_name] (String) The name of the microservice
-      #
-      # ===Returns
-      # (Boolean) `true` if the heartbeat thread was stopped, `false` otherwise
-      #
-      # ===Raises
+      # @param service_name [String] The name of the microservice
+      # @return [Boolean] `true` if the heartbeat thread was stopped, `false` otherwise
       #
       def unheartbeat(service_name)
         Thread.kill @@heartbeats[service_name]
@@ -228,16 +214,11 @@ module IBM
 
       # Deletes a service entry from Service Discovery
       #
-      # Example:
-      #   >> sd.delete('sample_service')
+      # @example
+      #   sd.delete('sample_service')
       #
-      # ===Arguments
-      # [service_name] (String) The name of the microservice
-      #
-      # ===Returns
-      # (Boolean) `true` if the service was removed, `false` otherwise
-      #
-      # ===Raises
+      # @param service_name [String] The name of the microservice
+      # @return [Boolean] `true` if the service was removed, `false` otherwise
       #
       def delete(service_name)
 
@@ -265,16 +246,10 @@ module IBM
       # Resets the state of this service.  This includes stopping any existing
       # heartbeat Threads as well as deleting all registered services.
       #
-      # Example:
-      #   >> sd.reset
+      # @example
+      #   sd.reset
       #
-      # ===Arguments
-      # +none+
-      #
-      # ===Returns
-      # (Boolean) `true` if the reset was successful, `false` otherwise
-      #
-      # ===Raises
+      # @return [Boolean] `true` if the reset was successful, `false` otherwise
       #
       def reset
 
@@ -294,16 +269,10 @@ module IBM
       # Returns information about the current local state of Service Discovery.
       # This includes information about the services and the heartbeats.
       #
-      # Example:
-      #   >> sd.info
+      # @example
+      #   sd.info
       #
-      # ===Arguments
-      # +none+
-      #
-      # ===Returns
-      # (Hash) { services: ['s1', 's2'], heartbeats: ['s1'] }
-      #
-      # ===Raises
+      # @return [Hash] { services: ['s1', 's2'], heartbeats: ['s1'] }
       #
       def info
         { services: @@services.keys, heartbeats: heartbeats.keys }
@@ -311,16 +280,10 @@ module IBM
 
       # Get the current list of registered services within Service Discovery
       #
-      # Example:
-      #   >> sd.list
+      # @example
+      #   sd.list
       #
-      # ===Arguments
-      # +none+
-      #
-      # ===Returns
-      # (Hash) { services: ['s1', 's2'] }
-      #
-      # ===Raises
+      # @return [Hash] { services: ['s1', 's2'] }
       #
       def list
 
@@ -343,14 +306,11 @@ module IBM
 
       # Discovers the connection information for a given microservice.
       #
-      # Example:
-      #   >> sd.discover('sample_service')
+      # @example
+      #   sd.discover('sample_service')
       #
-      # ===Arguments
-      # [service_name] (String) The name of the microservice
-      #
-      # ===Returns
-      # (Hash)
+      # @param service_name [String] The name of the microservice
+      # @return [Hash]
       #   {
       #      "service_name":"my_service",
       #      "instances":[
@@ -365,8 +325,6 @@ module IBM
       #         "metadata": {"key":"value"}
       #      }]
       #   }
-      #
-      # ===Raises
       #
       def discover(service_name)
         # curl -X GET -H "Authorization: bearer 12o191sqk5h***" https://servicediscovery.ng.bluemix.net/api/v1/services/my_service

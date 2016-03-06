@@ -27,6 +27,8 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
+  s.required_ruby_version = '>= 1.9.3'
+
   spec.add_dependency "unirest", "~> 1.1"
 
   spec.add_development_dependency "bundler", "~> 1.11"
